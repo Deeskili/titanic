@@ -21,6 +21,45 @@ from model.players import initPlayers
 # setup App pages
 from projects.projects import app_projects # Blueprint directory import projects definition
 
+import threading
+# import "packages" from flask
+from flask import render_template,request  # import render_template from "public" flask libraries
+from flask.cli import AppGroup
+from flask import Flask
+from flask_cors import CORS
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import LabelEncoder
+
+
+# import "packages" from "this" project
+from __init__ import app, db, cors  # Definitions initialization
+
+import json, jwt
+from flask import Blueprint, request, jsonify, current_app, Response
+from flask_restful import Api, Resource # used for REST API building
+from datetime import datetime
+from auth_middleware import token_required
+
+from model.users import User
+# import "packages" from "this" project
+from __init__ import app, db, cors  # Definitions initialization
+
+# setup APIs
+from api.covid import covid_api # Blueprint import api definition
+from api.joke import joke_api # Blueprint import api definition
+from api.user import user_api # Blueprint import api definition
+from api.player import player_api
+# database migrations
+from model.users import initUsers
+from model.players import initPlayers
+import pandas as pd
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.preprocessing import LabelEncoder
+
+# setup App pages
+from projects.projects import app_projects # Blueprint directory import projects definition
 
 # Initialize the SQLAlchemy object to work with the Flask app instance
 db.init_app(app)
