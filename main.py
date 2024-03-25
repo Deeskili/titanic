@@ -45,6 +45,47 @@ def index():
 def table():
     return render_template("table.html")
 
+@app.route('/predict', methods=['POST'])
+def predict():
+    # Read the Iris dataset
+    df = pd.read_csv('iris.csv')
+
+    # Encode the 'variety' column
+    label_encoder = LabelEncoder()
+    df['variety'] = label_encoder.fit_transform(df['variety'])
+
+    # Split the data into features and target
+    X = df.drop(columns=['variety'])
+    y = df['variety']
+
+    # Split data into train and test sets
+    X_train, _, y_train, _ = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    # Create and train the linear regression model
+    model = LinearRegression()
+    model.fit(X_train, y_train)
+
+    # Define the predict_variety function
+    def predict_variety(sepal_length, sepal_width, petal_length, petal_width):
+        # Make prediction
+        prediction = model.predict([[sepal_length, sepal_width, petal_length, petal_width]])
+        # Inverse transform the encoded prediction to get original variety
+        predicted_variety = label_encoder.inverse_transform(prediction.astype(int))
+        return predicted_variety[0]
+
+    # Get data from request
+    data = request.json
+    sepal_length = data["sepal_length"]
+    sepal_width = data["sepal_width"]
+    petal_length = data["petal_length"]
+    petal_width = data["petal_width"]
+    
+    # Call the predict_variety function
+    predicted_variety = predict_variety(sepal_length, sepal_width, petal_length, petal_width)
+    
+    # Return the prediction as JSON response
+    return jsonify({'predicted_variety': predicted_variety})
+
 @app.before_request
 def before_request():
     # Check if the request came from a specific origin
